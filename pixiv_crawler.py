@@ -65,7 +65,11 @@ class PixivHandler:
         }
         img = self.s.get(img_url, headers=header, cookies=self.cookies)
         img_type = (img_url.split('.'))[-1]
-        f = open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pixiv', illu_id + '.' + img_type), 'wb')
+        dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pixiv')
+
+        if not os.path.isdir(dir):
+            os.mkdir(dir)
+        f = open(os.path.join(dir, illu_id + '.' + img_type), 'wb')
         f.write(img.content)
 
     def get_original_img(self, page_url, illu_id):
@@ -110,12 +114,13 @@ class PixivHandler:
     def generate_url_by_id(self, id):
         return 'https://www.pixiv.net/member_illust.php?mode=medium&illust_id=' + id
 
+
 if __name__ == '__main__':
     args_parser = argparse.ArgumentParser(description='pixiv crawler')
     args_parser.add_argument('--pixiv_id', type=str, help='pixiv-id')
     args_parser.add_argument('--password', type=str, help='pasword')
     args_parser.add_argument('--keyword', type=str, help='key word to search')
-    args_parser.add_argument('--count', type=int, help='count of imgs to dump')
+    args_parser.add_argument('--count', type=int, default=20, help='count of imgs to dump')
     args = args_parser.parse_args()
     pixiv_handler = PixivHandler(args.pixiv_id, args.password)
     first_page = pixiv_handler.login()
